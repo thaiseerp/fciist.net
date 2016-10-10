@@ -23,5 +23,6 @@
         <div class="sub-heading">
             <p class="about-text">Thaiseer Parammal<br /><br /></p>
             <p class="about-text">If you have any suggestions or recommendations to improve the website, contact me at <i>thaiseer.p@gmail.com</i></p>
+	    <br /><p class="about-text">Source code of this website is made Open Source @ my GitHub <a href="https://github.com/thaiseerp/fciist.net" target="_blank">page</a></i></p>
        </div>
     </div>
