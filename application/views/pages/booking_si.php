@@ -18,7 +18,8 @@ $date = new DateTime('Tomorrow');
 			<div class="clear"> </div>
 		</div>	
 		
-        <div class="remember">   
+        <div class="remember"> 
+		<div class="g-recaptcha" data-sitekey="Site key here"></div>  
 			<div class="send">
                 <?php $val = array("onclick" => "this.value='Please wait..'");
 				 echo form_submit('submit', 'Book', $val); ?>

@@ -56,30 +56,44 @@ class Lunch extends CI_Controller
             $this->form_validation->set_rules('user_email', $this->lang->line('create_user_validation_email_label'), 'trim|required|valid_email');
             $this->form_validation->set_rules('user_sccode','SCcode', 'trim|required|exact_length[8]|alpha_numeric');
             
-            if ($this->form_validation->run() == true)
+            if($this->form_validation->run() == true)
             {
-                $email    = strtolower($this->input->post('user_email'));
-                $sccode = $this->input->post('user_sccode');
+                $form_response = $this->input->post('g-recaptcha-response');
+                $url = "https://www.google.com/recaptcha/api/siteverify";
+                $sitekey = "Google secret Key here";
+                $response = file_get_contents($url."?secret=".$sitekey."&response=".$form_response."&remoteip=".$_SERVER['REMOTE_ADDR']);
+                $verification = json_decode($response);
 
-                $booked = $this->booking_model->book_si_lunch($email,$sccode);
-                if($booked==1)
+                if(isset($verification->success) && $verification->success=="true")
                 {
-                    $this->data['page'] = 'booked_si';
-                    $this->data['header_data'] = array('title' => 'FCIIST | South Indian Lunch Booking Done');
-                    $this->load->view('template',$this->data);
+                    $email    = strtolower($this->input->post('user_email'));
+                    $sccode = $this->input->post('user_sccode');
+
+                    $booked = $this->booking_model->book_si_lunch($email,$sccode);
+                    if($booked==1)
+                    {
+                        $this->data['page'] = 'booked_si';
+                        $this->data['header_data'] = array('title' => 'FCIIST | South Indian Lunch Booking Done');
+                        $this->load->view('template',$this->data);
+                    }
+                    if($booked==2)
+                    {
+                        $this->session->set_flashdata('message', 'Email and SCode doesn\'t match');
+                        redirect("lunch", 'refresh');
+                    }
+                    else if($booked==3)
+                    {
+                        $this->data['page'] = 'booking_over';
+                        $this->data['header_data'] = array('title' => 'FCIIST | South Indian Lunch Booking Over');
+                        $this->load->view('template',$this->data);
+                    }
                 }
-                if($booked==2)
+                else
                 {
-                    $this->session->set_flashdata('message', 'Email and SCode doesn\'t match');
-                    redirect("lunch", 'refresh');
+                    $this->session->set_
+                    flashdata('message', 'Google Recaptcha Failed, Try again');
+                    redirect("lunch", 'refresh');                    
                 }
-                else if($booked==3)
-                {
-                    $this->data['page'] = 'booking_over';
-                    $this->data['header_data'] = array('title' => 'FCIIST | South Indian Lunch Booking Over');
-                    $this->load->view('template',$this->data);
-                }
-                
             }
             else
             {
